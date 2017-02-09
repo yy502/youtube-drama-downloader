@@ -62,6 +62,7 @@ def download_eps(name=None, url=None, ep=None, match=None):
     name:   str, video name prefix
     url:    str, YouTube playlist URL
     ep:     int, start episode number
+    match:  str, regex pattern to match
     """
 
     global dl_success
@@ -72,10 +73,9 @@ def download_eps(name=None, url=None, ep=None, match=None):
         if d["status"] == "finished":
             dl_success = True
 
-    title_regex = match % ("0" + str(ep) if ep < 10 else str(ep))
     options = config["options"].copy()  # don't want to save changes below in config
-    options["matchtitle"] = title_regex
-    options["outtmpl"] = name+"_"+title_regex+".mp4"
+    options["matchtitle"] = match % ep
+    options["outtmpl"] = "%s_%d.mp4" % (name, ep)
     options["progress_hooks"] = [finish_hook]
 
     with youtube_dl.YoutubeDL(options) as ytdl:
