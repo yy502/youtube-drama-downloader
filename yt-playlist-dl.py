@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import youtube_dl
 import json
 import sys
+import os
 
 CONFIG = "yt-playlists.json"
 config = None
@@ -39,6 +40,7 @@ def load_config():
 
 def save_config():
     try:
+        os.raname(CONFIG, CONFIG+".bak")  # in case next line fails and we end up with an empty file
         with open(CONFIG, 'w') as f:
             f.write(json.dumps(config, indent=4, sort_keys=True))
     except:
