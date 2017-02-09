@@ -17,10 +17,12 @@ SAMPLE_CONFIG = """
     "playlist": {
         "gu": {
             "last": 55,
+            "match": "EP%s",
             "url": "https://www.youtube.com/playlist?list=PLpOa-OrneXm1-d7KBR7qff7ETu3qnRp_6"
         }, 
         "san": {
             "last": 16,
+            "match": "EP%s",
             "url": "https://www.youtube.com/playlist?list=PLpOa-OrneXm34lESV2HJzCIFHA3tBrI5s"
         }
     }
@@ -41,16 +43,19 @@ def load_config():
 
 def save_config():
     try:
-        os.raname(CONFIG, CONFIG+".bak")  # in case next line fails and we end up with an empty file
+        os.rename(CONFIG, CONFIG+".bak")  # in case next line fails and we end up with an empty file
         with open(CONFIG, 'w') as f:
             f.write(json.dumps(config, indent=4, sort_keys=True))
+        os.remove(CONFIG+".bak")
     except:
-        print ">> Unable to write to config file (%s):\n"
+        print ">> Unable to write to config file (%s):\n" % CONFIG
         print config
+        os.rename(CONFIG+".bak", CONFIG)
+        print ">> %s has been restored." % CONFIG
         sys.exit()
 
 
-def download_eps(name=None, url=None, ep=None):
+def download_eps(name=None, url=None, ep=None, match=None):
     """ Search and download given episode, and later ones if any.
     Return last downloaded episode number, ep-1 if ep is not found.
     
@@ -67,7 +72,7 @@ def download_eps(name=None, url=None, ep=None):
         if d["status"] == "finished":
             dl_success = True
 
-    title_regex = "EP" + ("0" + str(ep) if ep < 10 else str(ep))
+    title_regex = match % ("0" + str(ep) if ep < 10 else str(ep))
     options = config["options"].copy()  # don't want to save changes below in config
     options["matchtitle"] = title_regex
     options["outtmpl"] = name+"_"+title_regex+".mp4"
@@ -76,7 +81,7 @@ def download_eps(name=None, url=None, ep=None):
     with youtube_dl.YoutubeDL(options) as ytdl:
         ytdl.download([url])
     if dl_success:  # ytdl successfully downloaded specified video
-        return download_eps(name=name, url=url, ep=ep+1)  # try next episode
+        return download_eps(name=name, url=url, ep=ep+1, match=match)  # try next episode
     else:
         return ep-1  # which is last downloaded episode number
 
@@ -84,12 +89,13 @@ def download_eps(name=None, url=None, ep=None):
 if __name__=='__main__':
     load_config()
 
-    for pl in config["playlist"]:
-        last = config['playlist'][pl]['last']
-        latest = download_eps(name=pl, url=config['playlist'][pl]['url'], ep=last+1)
+    playlists = config["playlist"]
+    for pl in playlists:
+        last = playlists[pl]['last']
+        latest = download_eps(name=pl, url=playlists[pl]['url'], ep=last+1, match=playlists[pl]['match'])
         if latest > last:
             print ">> %s is now up to EP%d" % (pl, latest)
-            config['playlist'][pl]['last'] = latest
+            playlists[pl]['last'] = latest
             save_config()
         else:
             print ">> %s has no new video" % pl

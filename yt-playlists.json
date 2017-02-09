@@ -5,10 +5,12 @@
     "playlist": {
         "gu": {
             "last": 57, 
+            "match": "EP%s", 
             "url": "https://www.youtube.com/playlist?list=PLpOa-OrneXm1-d7KBR7qff7ETu3qnRp_6"
         }, 
         "san": {
             "last": 19, 
+            "match": "EP%s", 
             "url": "https://www.youtube.com/playlist?list=PLpOa-OrneXm34lESV2HJzCIFHA3tBrI5s"
         }
     }
