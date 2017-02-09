@@ -8,8 +8,7 @@ CONFIG = "yt-playlists.json"
 config = None
 dl_status = None
 
-""" ### sample config ###
-
+SAMPLE_CONFIG = """
 {
     "options": {
         "format": "best"
@@ -25,28 +24,25 @@ dl_status = None
         }
     }
 }
-
 """
 
 
 def load_config():
-    global config
     try:
         with open(CONFIG, 'r') as f:
             config = json.load(f)
     except:
         print ">> Unable to load config file (%s). Exiting..." % CONFIG
+        print ">> Sample config file:\n%s" % SAMPLE_CONFIG
         sys.exit()
 
 
 def save_config():
-    global config
     try:
         with open(CONFIG, 'w') as f:
             f.write(json.dumps(config, indent=4, sort_keys=True))
     except:
         print ">> Unable to write to config file (%s):\n"
-        #print json.dumps(config, indent=4, sort_keys=True)
         print config
         sys.exit()
 
