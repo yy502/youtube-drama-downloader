@@ -29,6 +29,7 @@ SAMPLE_CONFIG = """
 
 
 def load_config():
+    global config
     try:
         with open(CONFIG, 'r') as f:
             config = json.load(f)
