@@ -7,7 +7,7 @@ import os
 
 CONFIG = "yt-playlists.json"
 config = None
-dl_status = None
+dl_success = None
 
 SAMPLE_CONFIG = """
 {
@@ -54,17 +54,18 @@ def download_eps(name=None, url=None, ep=None):
     """ Search and download given episode, and later ones if any.
     Return last downloaded episode number, ep-1 if ep is not found.
     
+    name:   str, video name prefix
     url:    str, YouTube playlist URL
     ep:     int, start episode number
     """
 
-    global dl_status
-    dl_status = False
+    global dl_success
+    dl_success = False
 
     def finish_hook(d):
-        global dl_status
+        global dl_success
         if d["status"] == "finished":
-            dl_status = True
+            dl_success = True
 
     title_regex = "EP" + ("0" + str(ep) if ep < 10 else str(ep))
     options = config["options"].copy()  # don't want to save changes below in config
@@ -74,7 +75,7 @@ def download_eps(name=None, url=None, ep=None):
 
     with youtube_dl.YoutubeDL(options) as ytdl:
         ytdl.download([url])
-    if dl_status:  # ytdl successfully downloaded specified video
+    if dl_success:  # ytdl successfully downloaded specified video
         return download_eps(name=name, url=url, ep=ep+1)  # try next episode
     else:
         return ep-1  # which is last downloaded episode number
