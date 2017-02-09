@@ -1,0 +1,15 @@
+{
+    "options": {
+        "format": "best"
+    }, 
+    "playlist": {
+        "gu": {
+            "last": 57, 
+            "url": "https://www.youtube.com/playlist?list=PLpOa-OrneXm1-d7KBR7qff7ETu3qnRp_6"
+        }, 
+        "san": {
+            "last": 19, 
+            "url": "https://www.youtube.com/playlist?list=PLpOa-OrneXm34lESV2HJzCIFHA3tBrI5s"
+        }
+    }
+}
