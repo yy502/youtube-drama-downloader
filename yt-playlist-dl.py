@@ -5,7 +5,7 @@ import json
 import sys
 import os
 
-LOCK="yt-playlists-dl.lock"
+LOCK="yt-playlist-dl.lock"
 CONFIG = "yt-playlists.json"
 config = None
 dl_success = None
