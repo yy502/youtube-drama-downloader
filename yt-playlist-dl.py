@@ -5,6 +5,7 @@ import json
 import sys
 import os
 
+LOCK="yt-playlists-dl.lock"
 CONFIG = "yt-playlists.json"
 config = None
 dl_success = None
@@ -87,6 +88,13 @@ def download_eps(name=None, url=None, ep=None, match=None):
 
 
 if __name__=='__main__':
+    if os.path.isfile(LOCK):
+        print ">> Another process is running in this directory. Exiting..."
+        sys.exit()
+    else:
+        with os.open(LOCK, 'w') as l:
+            pass
+
     load_config()
 
     playlists = config["playlist"]
@@ -99,3 +107,5 @@ if __name__=='__main__':
             save_config()
         else:
             print ">> %s has no new video" % pl
+
+    os.remove(LOCK)
