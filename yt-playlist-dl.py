@@ -92,8 +92,8 @@ if __name__=='__main__':
         print ">> Another process is running in this directory. Exiting..."
         sys.exit()
     else:
-        with os.open(LOCK, 'w') as l:
-            pass
+        f = open(LOCK, 'w')
+        f.close()
 
     load_config()
 
