@@ -5,7 +5,7 @@ import json
 import sys
 import os
 
-LOCK="yt-playlist-dl.lock"
+LOCK = "yt-playlists.lock"
 CONFIG = "yt-playlists.json"
 config = None
 dl_success = None
@@ -74,7 +74,7 @@ def download_eps(name=None, url=None, ep=None, match=None):
         if d["status"] == "finished":
             dl_success = True
 
-    options = config["options"].copy()  # don't want to save changes below in config
+    options = config["options"].copy()  # don't want to save the runtime options below in config
     options["matchtitle"] = match % ep
     options["outtmpl"] = "%s_%d.mp4" % (name, ep)
     options["progress_hooks"] = [finish_hook]
