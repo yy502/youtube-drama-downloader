@@ -31,6 +31,17 @@ SAMPLE_CONFIG = """
 """
 
 
+def lock():
+    with open(LOCK, 'w') as f:
+        pass
+
+
+def clean_exit():
+    if os.path.isfile(LOCK):
+        os.remove(LOCK)
+        sys.exit()
+
+
 def load_config():
     global config
     try:
@@ -39,7 +50,7 @@ def load_config():
     except:
         print ">> Unable to load config file (%s). Exiting..." % CONFIG
         print ">> Sample config file:\n%s" % SAMPLE_CONFIG
-        sys.exit()
+        clean_exit()
 
 
 def save_config():
@@ -53,7 +64,7 @@ def save_config():
         print config
         os.rename(CONFIG+".bak", CONFIG)
         print ">> %s has been restored." % CONFIG
-        sys.exit()
+        clean_exit()
 
 
 def download_eps(name=None, url=None, ep=None, match=None):
@@ -92,8 +103,7 @@ if __name__=='__main__':
         print ">> Another process is running in this directory. Exiting..."
         sys.exit()
     else:
-        f = open(LOCK, 'w')
-        f.close()
+        lock()
 
     load_config()
 
@@ -108,4 +118,4 @@ if __name__=='__main__':
         else:
             print ">> %s has no new video" % pl
 
-    os.remove(LOCK)
+    clean_exit()
