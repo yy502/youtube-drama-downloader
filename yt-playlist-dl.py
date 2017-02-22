@@ -4,6 +4,21 @@ import youtube_dl
 import json
 import sys
 import os
+import logging
+
+LOGNAME = "yt-playlists.log"
+
+logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
+rootLogger = logging.getLogger()
+rootLogger.setLevel(logging.DEBUG)
+
+fileHandler = logging.FileHandler(LOGNAME)
+fileHandler.setFormatter(logFormatter)
+rootLogger.addHandler(fileHandler)
+
+consoleHandler = logging.StreamHandler()
+consoleHandler.setFormatter(logFormatter)
+rootLogger.addHandler(consoleHandler)
 
 LOCK = "yt-playlists.lock"
 CONFIG = "yt-playlists.json"
@@ -33,12 +48,14 @@ SAMPLE_CONFIG = """
 
 def lock():
     with open(LOCK, 'w') as f:
-        pass
+        # f is unused
+        logging.info("yt-playlists locked")
 
 
 def clean_exit():
     if os.path.isfile(LOCK):
         os.remove(LOCK)
+        logging.info("yt-playlists unlocked")
         sys.exit()
 
 
@@ -48,8 +65,8 @@ def load_config():
         with open(CONFIG, 'r') as f:
             config = json.load(f)
     except:
-        print ">> Unable to load config file (%s). Exiting..." % CONFIG
-        print ">> Sample config file:\n%s" % SAMPLE_CONFIG
+        logging.error("Unable to load config file (%s). Exiting...", CONFIG)
+        logging.debug("Sample config file:\n%s", SAMPLE_CONFIG)
         clean_exit()
 
 
@@ -60,10 +77,10 @@ def save_config():
             f.write(json.dumps(config, indent=4, sort_keys=True))
         os.remove(CONFIG+".bak")
     except:
-        print ">> Unable to write to config file (%s):\n" % CONFIG
-        print config
+        logging.error("Unable to write to config file (%s):\n", CONFIG)
+        logging.debug(config)
         os.rename(CONFIG+".bak", CONFIG)
-        print ">> %s has been restored." % CONFIG
+        logging.debug("%s has been restored.", CONFIG)
         clean_exit()
 
 
@@ -91,16 +108,19 @@ def download_eps(name=None, url=None, ep=None, match=None):
     options["progress_hooks"] = [finish_hook]
 
     with youtube_dl.YoutubeDL(options) as ytdl:
+        logging.info("Started downloading %s", options["outtmpl"])
         ytdl.download([url])
     if dl_success:  # ytdl successfully downloaded specified video
+        logging.info("Finished downloading %s", options["outtmpl"])
         return download_eps(name=name, url=url, ep=ep+1, match=match)  # try next episode
     else:
+        logging.info("Unable to download %s", options["outtmpl"])
         return ep-1  # which is last downloaded episode number
 
 
 if __name__=='__main__':
     if os.path.isfile(LOCK):
-        print ">> Another process is running in this directory. Exiting..."
+        logging.error("Another process is running in this directory. Exiting...")
         sys.exit()
     else:
         lock()
@@ -112,10 +132,10 @@ if __name__=='__main__':
         last = playlists[pl]['last']
         latest = download_eps(name=pl, url=playlists[pl]['url'], ep=last+1, match=playlists[pl]['match'])
         if latest > last:
-            print ">> %s is now up to EP%d" % (pl, latest)
+            logging.info("%s is now up to EP%d", pl, latest)
             playlists[pl]['last'] = latest
             save_config()
         else:
-            print ">> %s has no new video" % pl
+            logging.info("%s has no new video", pl)
 
     clean_exit()
