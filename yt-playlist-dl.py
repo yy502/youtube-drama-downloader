@@ -33,12 +33,12 @@ SAMPLE_CONFIG = """
     "playlist": {
         "gu": {
             "last": 55,
-            "match": "EP%s",
+            "match": "EP0?%d",
             "url": "https://www.youtube.com/playlist?list=PLpOa-OrneXm1-d7KBR7qff7ETu3qnRp_6"
         }, 
         "san": {
             "last": 16,
-            "match": "EP%s",
+            "match": "EP0?%d",
             "url": "https://www.youtube.com/playlist?list=PLpOa-OrneXm34lESV2HJzCIFHA3tBrI5s"
         }
     }
@@ -121,6 +121,7 @@ def download_eps(name=None, url=None, ep=None, match=None):
 if __name__=='__main__':
     if len(sys.argv) == 2:
         # pass any argument for sample json config
+        print CONFIG
         print SAMPLE_CONFIG
         sys.exit()
 
