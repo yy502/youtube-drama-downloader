@@ -119,6 +119,11 @@ def download_eps(name=None, url=None, ep=None, match=None):
 
 
 if __name__=='__main__':
+    if len(sys.argv) == 2:
+        # pass any argument for sample json config
+        print SAMPLE_CONFIG
+        sys.exit()
+
     if os.path.isfile(LOCK):
         logging.error("Another process is running in this directory. Exiting...")
         sys.exit()
