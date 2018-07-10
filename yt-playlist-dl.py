@@ -104,7 +104,7 @@ def download_eps(name=None, url=None, ep=None, match=None):
 
     options = config["options"].copy()  # don't want to save the runtime options below in config
     options["matchtitle"] = match % ep
-    options["outtmpl"] = "%s_%d.mp4" % (name, ep)
+    options["outtmpl"] = "%s_%s%d.mp4" % (name, '0' if ep < 10 else '', ep)
     options["progress_hooks"] = [finish_hook]
 
     with youtube_dl.YoutubeDL(options) as ytdl:
